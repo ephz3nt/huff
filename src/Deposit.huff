@@ -1,0 +1,41 @@
+// #define constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 // mainnet
+#define constant WETH = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6 // goerli
+#define constant TRANSFER_SIG = 0xa9059cbb00000000000000000000000000000000000000000000000000000000
+#define constant DEPOSIT_SIG = 0xd0e30db000000000000000000000000000000000000000000000000000000000
+#define macro MAIN() = takes(0) returns(0){
+    returndatasize
+    calldataload
+    returndatasize
+    byte
+    jump
+
+deposit_weth:
+    [DEPOSIT_SIG] msize mstore
+    returndatasize
+    returndatasize
+    0x20
+    returndatasize
+    callvalue
+    [WETH]
+    gas
+    call iszero gtfo jumpi
+    stop
+
+withdraw_weth:
+    [TRANSFER_SIG] msize mstore
+    caller 0x04 mstore
+    0x01 calldataload 0x24 mstore // 0x01 offset after 20 bytes
+    returndatasize
+    returndatasize
+    0x44
+    returndatasize
+    returndatasize
+    [WETH]
+    gas
+    call iszero gtfo jumpi
+    stop
+gtfo:
+    0x03
+    dup1
+    revert
+}
